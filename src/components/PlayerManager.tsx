@@ -61,7 +61,7 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
 
         {/* Puntos Pendientes - Solo mostrar si hay puntos pendientes */}
         {hasPendingPoints && (
-          <div className="mb-6 p-4 bg-uno-red bg-opacity-10 dark:bg-uno-red dark:bg-opacity-20 rounded-lg border border-uno-red border-opacity-30 dark:border-uno-red dark:border-opacity-50">
+          <div className="mt-6 p-4 bg-uno-red bg-opacity-10 dark:bg-uno-red dark:bg-opacity-20 rounded-lg border border-uno-red border-opacity-30 dark:border-uno-red dark:border-opacity-50">
             <h3 className="font-semibold text-uno-red dark:text-uno-red-light mb-3 flex items-center">
               <ClockIcon />
               Puntos Pendientes de Confirmar

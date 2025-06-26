@@ -79,7 +79,7 @@ export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
               <button
                 key={player.id}
                 onClick={() => handlePlayerSelect(player.id)}
-                className={`p-4 text-left transition-colors bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-uno-blue hover:text-white dark:hover:bg-uno-blue-light dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-uno-blue`}
+                className={`p-4 text-left transition-colors bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-uno-blue hover:text-white dark:hover:bg-uno-blue-light dark:hover:text-white`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">

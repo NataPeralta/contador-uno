@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { PlayerGridProps, PlayerNameCellProps } from '../types';
 import DeleteIcon from '../assets/DeleteIcon';
+import PencilIcon from '../assets/PencilIcon';
 
 export const PlayerGrid: React.FC<PlayerGridProps> = ({
   players,
@@ -38,7 +39,7 @@ export const PlayerGrid: React.FC<PlayerGridProps> = ({
               title="Editar esta ronda"
               onClick={() => onEditCompleteRound(idx)}
             >
-              ✎
+              <PencilIcon />
             </button>
           </div>
         ))}
