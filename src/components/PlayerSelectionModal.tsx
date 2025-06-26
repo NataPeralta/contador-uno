@@ -3,7 +3,6 @@ import { Modal } from './Modal';
 import type { PlayerSelectionModalProps } from '../types';
 import ArrowRightIcon from '../assets/ArrowRightIcon';
 
-
 export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
   isOpen,
   onClose,
@@ -74,7 +73,7 @@ export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
         
         <div className="grid gap-3">
           {players.map(player => {
-            const pending = getPendingPointsForPlayer(player.id);
+            const pending = getPendingPointsForPlayer(player.id)
             return (
               <button
                 key={player.id}
@@ -89,6 +88,13 @@ export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
                     <p className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-white">
                       Puntos actuales: {player.points}
                     </p>
+                    {pending < 0 && (
+                      <div className="mt-1">
+                        <p className="text-sm text-uno-green dark:text-uno-green-light font-medium group-hover:text-white">
+                          Puntos pendientes: -{pending}
+                        </p>
+                      </div>
+                    )}
                     {pending > 0 && (
                       <div className="mt-1">
                         <p className="text-sm text-uno-red dark:text-uno-red-light font-medium group-hover:text-white">

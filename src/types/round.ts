@@ -5,6 +5,7 @@ export interface Round {
   winnerId: string;
   points: PlayerPoints[];
   timestamp: number;
+  subtractedAmount?: number;
 }
 
 export interface PlayerPoints {

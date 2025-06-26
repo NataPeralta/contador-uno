@@ -1,5 +1,6 @@
 import type { Player } from '../player';
 import type { PlayerPoints } from '../round';
+import type { GameSettings } from '../game';
 
 export interface PlayerSelectionModalProps {
   isOpen: boolean;
@@ -11,4 +12,5 @@ export interface PlayerSelectionModalProps {
   hasPendingPoints?: boolean;
   onEditPendingPoints?: (playerId: string) => void;
   title?: string;
+  settings?: GameSettings;
 } 

@@ -16,12 +16,7 @@ const defaultSettings: GameSettings = {
 };
 
 const defaultState: GameState = {
-  players: [
-    { id: '1', name: 'Player 1', points: 0, rounds: [] },
-    { id: '2', name: 'Player 2', points: 0, rounds: [] },
-    { id: '3', name: 'Player 3', points: 0, rounds: [] },
-    { id: '4', name: 'Player 4', points: 0, rounds: [] }
-  ],
+  players: [],
   settings: defaultSettings,
   history: []
 };
@@ -143,6 +138,8 @@ export const useGameState = () => {
     updateState(state => {
       let adjustedPlayerPoints = [...playerPoints];
       const settings = state.settings;
+      let subtractedAmount = 0; // Para guardar cuánto se restó
+
       if (settings.winnerSubtractsPoints && settings.winnerSubtractValue && winnerId) {
         // Buscar el ganador
         const winnerIdx = adjustedPlayerPoints.findIndex(p => p.playerId === winnerId);
@@ -159,8 +156,17 @@ export const useGameState = () => {
           const totalPoints = adjustedPlayerPoints
             .filter(p => p.playerId !== winnerId)
             .reduce((acc, p) => acc + p.points, 0);
-          subtract = Math.round((settings.winnerSubtractValue / 100) * totalPoints);
+          // Usar Math.floor para números enteros y agregar límite mínimo de 10
+          subtract = Math.floor((settings.winnerSubtractValue / 100) * totalPoints);
+          // Si el resultado es menor a 10, no restar nada
+          if (subtract < 10) {
+            subtract = 0;
+          }
         }
+
+        // Guardar cuánto se restó
+        subtractedAmount = subtract;
+
         // Restar al ganador
         adjustedPlayerPoints = adjustedPlayerPoints.map(p =>
           p.playerId === winnerId
@@ -172,7 +178,8 @@ export const useGameState = () => {
         id: generateUniqueId(),
         winnerId,
         points: adjustedPlayerPoints,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        subtractedAmount // Agregar información sobre cuánto se restó
       };
 
       // Guardar estado anterior para undo
@@ -240,9 +247,30 @@ export const useGameState = () => {
 
       // Crear la ronda actualizada
       const originalRound = state.players?.[0]?.rounds?.[roundIndex];
+
+      // Calcular si se debe restar algo al ganador
+      let subtractedAmount = 0;
+      const settings = state.settings;
+      const winner = updatedPoints.find(p => p.points === 0);
+
+      if (settings.winnerSubtractsPoints && settings.winnerSubtractValue && winner) {
+        if (settings.winnerSubtractType === 'fixed') {
+          subtractedAmount = settings.winnerSubtractValue;
+        } else if (settings.winnerSubtractType === 'percent') {
+          const totalPoints = updatedPoints
+            .filter(p => p.playerId !== winner.playerId)
+            .reduce((acc, p) => acc + p.points, 0);
+          subtractedAmount = Math.floor((settings.winnerSubtractValue / 100) * totalPoints);
+          if (subtractedAmount < 10) {
+            subtractedAmount = 0;
+          }
+        }
+      }
+
       const updatedRound: Round = {
         ...originalRound,
-        points: updatedPoints
+        points: updatedPoints,
+        subtractedAmount
       };
 
       // Actualizar todas las rondas en todos los jugadores

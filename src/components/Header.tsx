@@ -26,7 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Toggle de tema */}
             <button
               onClick={onThemeToggle}
-              className="p-2 rounded-lg bg-uno-yellow hover:bg-uno-yellow-dark dark:bg-uno-blue dark:hover:bg-uno-blue-light hover:text-white transition-colors"
+              className="p-2 rounded-lg bg-uno-yellow hover:bg-uno-yellow-dark transition-colors"
               title="Cambiar tema"
             >
               {resolvedTheme === 'dark' ? (
@@ -39,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Configuración */}
             <button
               onClick={onOpenSettings}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-uno-blue hover:text-white dark:hover:bg-uno-blue-light transition-colors"
+              className="p-2 rounded-lg bg-uno-yellow hover:bg-uno-yellow-dark transition-colors"
               title="Configuración"
             >
               <SettingsIcon />

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import type { PlayerGridProps, PlayerNameCellProps } from '../types';
-import DeleteIcon from '../assets/DeleteIcon';
+import React from 'react';
+import type { PlayerGridProps } from '../types';
 import PencilIcon from '../assets/PencilIcon';
+import { PlayerGridCard } from './PlayerCard';
 
 export const PlayerGrid: React.FC<PlayerGridProps> = ({
   players,
@@ -47,136 +47,20 @@ export const PlayerGrid: React.FC<PlayerGridProps> = ({
           Total
         </div>
 
-        {/* Filas de jugadores */}
-        {players.map((player) => {
-          const isWinner = player.points >= targetPoints;
-          // Historial de puntos acumulados y sumados por ronda
-          let history: { total: number; sum: number }[] = [];
-          let acc = 0;
-          player.rounds.forEach(round => {
-            const playerPoints = round.points.find(p => p.playerId === player.id);
-            const sum = playerPoints ? playerPoints.points : 0;
-            acc += sum;
-            history.push({ total: acc, sum });
-          });
-
-          return (
-            <React.Fragment key={player.id}>
-              {/* Nombre y borrar */}
-              <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
-                <PlayerNameCell
-                  player={player}
-                  onUpdateName={onUpdatePlayerName}
-                  onRemove={onRemovePlayer}
-                  canRemove={canRemovePlayer}
-                  isWinner={isWinner}
-                />
-              </div>
-              {/* Rondas */}
-              {Array.from({ length: maxRounds }, (_, roundIdx) => {
-                const roundData = history[roundIdx];
-                return (
-                  <div
-                    key={roundIdx}
-                    className="px-3 py-3 text-center border-b border-gray-200 dark:border-gray-700 flex items-center gap-2 justify-center"
-                  >
-                    {roundData ? (
-                      <>
-                        <span className="text-lg font-bold text-gray-700 dark:text-gray-200">
-                          {roundData.total}
-                        </span>
-                        <span className={`text-xs font-medium ${
-                          roundData.sum > 0
-                            ? 'text-uno-red dark:text-uno-red-light'
-                            : 'text-uno-green dark:text-uno-green-light'
-                        }`}>
-                          {roundData.sum > 0 ? `+${roundData.sum}` : '0'}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-gray-400 dark:text-gray-500 text-sm">-</span>
-                    )}
-                  </div>
-                );
-              })}
-              {/* Total */}
-              <div className="px-4 py-3 text-center border-b border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center">
-                <div className={`text-2xl font-bold ${
-                  isWinner
-                    ? 'text-uno-green dark:text-uno-green-light'
-                    : 'text-gray-900 dark:text-gray-100'
-                }`}>
-                  {player.points}
-                </div>
-                {isWinner && (
-                  <div className="text-xs text-uno-green dark:text-uno-green-light font-medium">
-                    ¡GANADOR!
-                  </div>
-                )}
-              </div>
-            </React.Fragment>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-const PlayerNameCell: React.FC<PlayerNameCellProps> = ({ player, onUpdateName, onRemove, canRemove, isWinner }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(player.name);
-
-  const handleNameSubmit = () => {
-    if (editName.trim()) {
-      onUpdateName(player.id, editName.trim());
-      setIsEditing(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleNameSubmit();
-    } else if (e.key === 'Escape') {
-      setEditName(player.name);
-      setIsEditing(false);
-    }
-  };
-
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex-1">
-        {isEditing ? (
-          <input
-            type="text"
-            value={editName}
-            onChange={(e) => setEditName(e.target.value)}
-            onBlur={handleNameSubmit}
-            onKeyDown={handleKeyPress}
-            className="w-full text-lg font-bold bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded px-2 py-1 shadow-sm transition-all"
-            autoFocus
+        {/* Filas de jugadores usando el componente extraído */}
+        {players.map((player) => (
+          <PlayerGridCard
+            key={player.id}
+            player={player}
+            targetPoints={targetPoints}
+            maxRounds={maxRounds}
+            onUpdateName={onUpdatePlayerName}
+            onRemove={onRemovePlayer}
+            canRemove={canRemovePlayer}
+            onEditCompleteRound={onEditCompleteRound}
           />
-        ) : (
-          <span
-            className={`text-lg font-bold cursor-pointer hover:text-uno-blue dark:hover:text-uno-blue-light transition-colors px-2 py-1 rounded ${
-              isWinner
-                ? 'text-uno-green dark:text-uno-green-light'
-                : 'text-gray-900 dark:text-gray-100'
-            }`}
-            onClick={() => setIsEditing(true)}
-          >
-            {player.name}
-          </span>
-        )}
+        ))}
       </div>
-      {canRemove && !isEditing && (
-        <button
-          onClick={() => onRemove(player.id)}
-          className="text-gray-500 dark:text-gray-400 hover:text-uno-red dark:hover:text-uno-red-light transition-colors p-1 rounded"
-          title="Eliminar jugador"
-        >
-          <DeleteIcon />
-        </button>
-      )}
     </div>
   );
 };

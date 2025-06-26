@@ -152,6 +152,7 @@ function App() {
         hasPendingPoints={hasPendingPoints}
         onEditPendingPoints={handleEditPendingPoints}
         title={editingCompleteRound !== null ? `Editar Ronda ${editingCompleteRound + 1}` : undefined}
+        settings={gameState.settings}
       />
 
       <CardsModal
