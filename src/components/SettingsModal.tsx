@@ -85,7 +85,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     onChange={() => onUpdateSettings({ winnerSubtractType: 'fixed' })}
                     className="text-uno-blue focus:ring-uno-blue"
                   />
-                  <span className="text-sm">Valor fijo</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Valor fijo</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -94,7 +94,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     onChange={() => onUpdateSettings({ winnerSubtractType: 'percent' })}
                     className="text-uno-blue focus:ring-uno-blue"
                   />
-                  <span className="text-sm">Porcentaje</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Porcentaje</span>
                 </label>
               </div>
               <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   placeholder={settings.winnerSubtractType === 'percent' ? 'Porcentaje (%)' : 'Valor fijo'}
                 />
                 {settings.winnerSubtractType === 'percent' && (
-                  <span className="text-sm text-gray-500">%</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">%</span>
                 )}
               </div>
             </div>
