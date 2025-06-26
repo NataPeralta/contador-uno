@@ -15,7 +15,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center h-12 sm:h-14 md:h-16">
             <img
-              src="/logo.png"
+              src="./logo.png"
               alt="UNO"
               className="h-10 sm:h-12 md:h-14 max-w-[120px] w-auto object-contain"
               style={{ minHeight: 32 }}
