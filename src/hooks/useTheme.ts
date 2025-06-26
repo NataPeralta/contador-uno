@@ -16,17 +16,14 @@ export const useTheme = (initialTheme: Theme = 'system') => {
         newResolvedTheme = theme;
       }
 
-      console.log('updateResolvedTheme - theme:', theme, 'newResolvedTheme:', newResolvedTheme);
       setResolvedTheme(newResolvedTheme);
 
       // Aplicar tema al documento inmediatamente
       const root = document.documentElement;
       if (newResolvedTheme === 'dark') {
         root.classList.add('dark');
-        console.log('Added dark class to document');
       } else {
         root.classList.remove('dark');
-        console.log('Removed dark class from document');
       }
     };
 
@@ -43,7 +40,6 @@ export const useTheme = (initialTheme: Theme = 'system') => {
   }, [theme]);
 
   const changeTheme = (newTheme: Theme) => {
-    console.log('changeTheme called with:', newTheme);
     setTheme(newTheme);
   };
 

@@ -57,10 +57,6 @@ function App() {
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
-  // Debug logs
-  console.log('App render - isLoaded:', isLoaded);
-  console.log('App render - gameState:', gameState);
-
   // Sincronizar tema con configuración
   useEffect(() => {
     changeTheme(gameState.settings.theme);
@@ -68,7 +64,6 @@ function App() {
 
   const handleThemeToggle = () => {
     const newTheme = resolvedTheme === 'dark' ? 'light' : 'dark';
-    console.log('handleThemeToggle - resolvedTheme:', resolvedTheme, 'newTheme:', newTheme);
     updateSettings({ theme: newTheme });
   };
 
@@ -94,11 +89,8 @@ function App() {
   const canRemovePlayer = gameState.players.length > 2;
 
   if (!isLoaded) {
-    console.log('Showing LoadingSpinner');
     return <LoadingSpinner />;
   }
-
-  console.log('Rendering main app content');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
