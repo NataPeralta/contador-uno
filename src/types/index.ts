@@ -3,6 +3,7 @@ export * from './round';
 export * from './unoCard';
 export * from './game';
 export * from './modal';
+export * from './hooks';
 
 export * from './components/Header.types';
 export * from './components/PlayerGrid.types';
