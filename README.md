@@ -179,7 +179,7 @@ Este proyecto usa [Semantic Versioning](https://semver.org/). Para ver los cambi
 
 ## 🔄 Build Automático
 
-Este proyecto incluye un sistema de build automático que actualiza la carpeta `dist` en GitHub cada vez que se hace un push a la rama principal.
+Este proyecto incluye un sistema de build automático que actualiza la carpeta `dist` en GitHub cada vez que se hace un push a la rama principal, y despliega automáticamente a GitHub Pages.
 
 ### Workflows Configurados
 
@@ -189,17 +189,27 @@ Este proyecto incluye un sistema de build automático que actualiza la carpeta `
    - Actualiza automáticamente la carpeta `dist` en el repositorio
    - Evita bucles infinitos ignorando cambios en `dist/**`
 
-2. **Build and Deploy** (`.github/workflows/deploy.yml`)
-   - Se ejecuta en pushes y pull requests a `main`
+2. **Deploy to GitHub Pages** (`.github/workflows/static.yml`)
+   - Se ejecuta en cada push a `main`
    - Construye el proyecto y despliega a GitHub Pages
-   - Utiliza la rama `gh-pages` para el deploy
+   - Utiliza la carpeta `dist` como fuente para el deploy
+   - Configura automáticamente GitHub Pages
+
+### Configuración de GitHub Pages
+
+Para activar GitHub Pages:
+
+1. **Ve a Settings** → **Pages** en tu repositorio
+2. **Source**: Selecciona "GitHub Actions"
+3. **Branch**: Se configurará automáticamente
+4. **URL**: Tu sitio estará disponible en `https://nataperalta.github.io/contador-uno/`
 
 ### Configuración
 
 Para que el build automático funcione correctamente:
 
 1. **Permisos de GitHub Actions**: Asegúrate de que GitHub Actions tenga permisos de escritura en tu repositorio
-2. **Token de Acceso**: El workflow usa `GITHUB_TOKEN` automáticamente
+2. **GitHub Pages**: Activa GitHub Pages en la configuración del repositorio
 3. **Carpeta dist**: La carpeta `dist` ya no está en `.gitignore` para permitir su actualización
 
 ### Uso
@@ -212,7 +222,9 @@ git commit -m "feat: Nueva funcionalidad"
 git push origin main
 ```
 
-El workflow se ejecutará en segundo plano y actualizará la carpeta `dist` con el build más reciente.
+El workflow se ejecutará en segundo plano y:
+- Actualizará la carpeta `dist` con el build más reciente
+- Desplegará automáticamente a GitHub Pages
 
 ## 🤝 Contribución
 
