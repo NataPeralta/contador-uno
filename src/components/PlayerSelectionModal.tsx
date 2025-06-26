@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal } from './Modal';
 import type { PlayerSelectionModalProps } from '../types';
 import ArrowRightIcon from '../assets/ArrowRightIcon';
+import { Button } from './Button';
 
 export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
   isOpen,
@@ -12,7 +13,8 @@ export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
   onConfirmRound,
   hasPendingPoints = false,
   onEditPendingPoints,
-  title
+  title,
+  currentRound
 }) => {
   const handlePlayerSelect = (playerId: string) => {
     // Si el jugador tiene puntos pendientes, permitir editar
@@ -31,7 +33,8 @@ export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
       .reduce((sum, point) => sum + point.points, 0);
   };
 
-  const modalTitle = title || (hasPendingPoints ? "Confirmar Ronda" : "Seleccionar Ganador");
+  
+  const modalTitle = title || (hasPendingPoints ? `Confirmar Ronda ${currentRound}` : "Seleccionar Ganador");
 
   return (
     <Modal 
@@ -43,18 +46,20 @@ export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
         hasPendingPoints && onConfirmRound ? (
           <div className="p-6">
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={onClose}
-                className="px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 flex-1"
+                variant="gray"
+                aria-label="Cancelar"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={onConfirmRound}
-                className="px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-uno-green text-white hover:bg-uno-green-dark focus:ring-uno-green flex-1"
+                variant="green"
+                aria-label="Confirmar Ronda"
               >
                 Confirmar Ronda
-              </button>
+              </Button>
             </div>
           </div>
         ) : undefined
@@ -75,10 +80,11 @@ export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
           {players.map(player => {
             const pending = getPendingPointsForPlayer(player.id)
             return (
-              <button
+              <Button
                 key={player.id}
                 onClick={() => handlePlayerSelect(player.id)}
-                className={`p-4 text-left transition-colors bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-uno-blue hover:text-white dark:hover:bg-uno-blue-light dark:hover:text-white`}
+                variant="gray"
+                aria-label={`Seleccionar ${player.name}`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
@@ -88,13 +94,6 @@ export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
                     <p className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-white">
                       Puntos actuales: {player.points}
                     </p>
-                    {pending < 0 && (
-                      <div className="mt-1">
-                        <p className="text-sm text-uno-green dark:text-uno-green-light font-medium group-hover:text-white">
-                          Puntos pendientes: -{pending}
-                        </p>
-                      </div>
-                    )}
                     {pending > 0 && (
                       <div className="mt-1">
                         <p className="text-sm text-uno-red dark:text-uno-red-light font-medium group-hover:text-white">
@@ -107,18 +106,19 @@ export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
                     <ArrowRightIcon />
                   </div>
                 </div>
-              </button>
+              </Button>
             );
           })}
         </div>
 
         {!hasPendingPoints && (
-          <button
+          <Button
             onClick={onClose}
-            className="w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+            variant="gray"
+            aria-label="Cancelar" 
           >
             Cancelar
-          </button>
+          </Button>
         )}
       </div>
     </Modal>

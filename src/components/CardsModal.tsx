@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { Modal } from './Modal';
 import type { UnoCard, CardSelection, CardsModalProps } from '../types';
 import { UNO_CARDS } from '../data/unoCards';
+import { Button } from './Button';
+import { Input } from './Input';
 
 const MAX_CARDS_PER_TYPE = 4;
 
@@ -99,19 +101,23 @@ export const CardsModal: React.FC<CardsModalProps> = ({
       footer={
         <div className="p-6">
           <div className="flex gap-3">
-            <button
+            <Button
               onClick={handleBack}
-              className="px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 flex-1"
+              variant="blue"
+              className="flex-1"
+              aria-label="Atrás"
             >
               Atrás
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleConfirm}
-              className="px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-uno-blue text-white hover:bg-uno-blue-dark focus:ring-uno-blue flex-1"
+              variant="blue"
               disabled={!canConfirm}
+              className="flex-1"
+              aria-label={`Confirmar (${totalPoints} puntos)`}
             >
               Confirmar ({totalPoints} puntos)
-            </button>
+            </Button>
           </div>
         </div>
       }
@@ -131,15 +137,11 @@ export const CardsModal: React.FC<CardsModalProps> = ({
 
         {/* Puntos directos */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Puntos adicionales (opcional)
-          </label>
-          <input
+          <Input
+            label="Puntos adicionales (opcional)"
             type="number"
-            min="0"
             value={directPoints}
             onChange={(e) => setDirectPoints(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-uno-blue focus:border-transparent"
             placeholder="0"
           />
         </div>

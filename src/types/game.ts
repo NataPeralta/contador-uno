@@ -1,4 +1,5 @@
 import type { Player } from './player';
+import type { PlayerPoints } from './round';
 
 export interface GameSettings {
   targetPoints: number;
@@ -12,7 +13,8 @@ export interface GameSettings {
 export interface GameState {
   players: Player[];
   settings: GameSettings;
-  history: GameState[];
+  pendingPoints: PlayerPoints[];
+  currentRoundId: string | null;
 }
 
 export type TargetPoints = 300 | 400 | 500 | 600 | 700; 

@@ -2,6 +2,7 @@ import React from 'react';
 import type { PlayerGridProps } from '../types';
 import PencilIcon from '../assets/PencilIcon';
 import { PlayerGridCard } from './PlayerCard';
+import { Button } from './Button';
 
 export const PlayerGrid: React.FC<PlayerGridProps> = ({
   players,
@@ -34,13 +35,14 @@ export const PlayerGrid: React.FC<PlayerGridProps> = ({
             className="px-3 py-3 text-center font-semibold text-uno-green dark:text-uno-green-light border-b border-gray-200 dark:border-gray-700 bg-uno-green bg-opacity-10 dark:bg-uno-green dark:bg-opacity-20 flex items-center gap-2 justify-center"
           >
             <span>Ronda {idx + 1}</span>
-            <button
-              className="p-1 text-xs text-uno-blue dark:text-uno-blue-light hover:text-uno-blue-dark dark:hover:text-uno-blue transition-colors"
-              title="Editar esta ronda"
+            <Button
+              variant="transparent"
+              className="w-min"
+              aria-label="Editar esta ronda"
               onClick={() => onEditCompleteRound(idx)}
             >
               <PencilIcon />
-            </button>
+            </Button>
           </div>
         ))}
         <div className="px-4 py-3 text-center font-semibold text-uno-green dark:text-uno-green-light border-b border-gray-200 dark:border-gray-700 bg-uno-green bg-opacity-10 dark:bg-uno-green dark:bg-opacity-20">
@@ -52,6 +54,7 @@ export const PlayerGrid: React.FC<PlayerGridProps> = ({
           <PlayerGridCard
             key={player.id}
             player={player}
+            allPlayers={players}
             targetPoints={targetPoints}
             maxRounds={maxRounds}
             onUpdateName={onUpdatePlayerName}

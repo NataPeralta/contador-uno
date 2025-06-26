@@ -13,3 +13,7 @@ export * from './components/PlayerSelectionModal.types';
 export * from './components/CardsModal.types';
 export * from './components/GameControls.types';
 export * from './components/PlayerCard.types';
+export * from './components/Button.types';
+export * from './components/Input.types';
+export * from './components/Alert.types';
+export * from './components/Confirm.types';

@@ -13,4 +13,5 @@ export interface PlayerSelectionModalProps {
   onEditPendingPoints?: (playerId: string) => void;
   title?: string;
   settings?: GameSettings;
+  currentRound?: string | undefined;
 } 

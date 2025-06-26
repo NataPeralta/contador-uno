@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import DeleteIcon from '../assets/DeleteIcon';
+import { Button } from './Button';
+import { Input } from './Input';
 
 export interface PlayerNameCellProps {
   player: any;
@@ -36,17 +38,15 @@ export const PlayerNameCell: React.FC<PlayerNameCellProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 w-full">
       <div className="flex-1">
         {isEditing ? (
-          <input
+          <Input
             type="text"
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
             onBlur={handleNameSubmit}
             onKeyDown={handleKeyPress}
-            className="w-full text-lg font-bold bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded px-2 py-1 shadow-sm transition-all"
-            autoFocus
           />
         ) : (
           <span
@@ -62,13 +62,14 @@ export const PlayerNameCell: React.FC<PlayerNameCellProps> = ({
         )}
       </div>
       {canRemove && !isEditing && (
-        <button
+        <Button
           onClick={() => onRemove(player.id)}
-          className="text-gray-500 dark:text-gray-400 hover:text-uno-red dark:hover:text-uno-red-light transition-colors p-1 rounded"
-          title="Eliminar jugador"
+          variant="transparent"
+          className="w-min"
+          aria-label="Eliminar jugador"
         >
           <DeleteIcon />
-        </button>
+        </Button>
       )}
     </div>
   );

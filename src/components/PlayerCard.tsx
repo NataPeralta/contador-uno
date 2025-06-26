@@ -5,15 +5,33 @@ import type { Round, PlayerPoints } from '../types';
 // Componente para la card del jugador en la tabla (PlayerGrid)
 export const PlayerGridCard: React.FC<{
   player: any;
+  allPlayers: any[];
   targetPoints: number;
   maxRounds: number;
   onUpdateName: (playerId: string, name: string) => void;
   onRemove: (playerId: string) => void;
   canRemove: boolean;
   onEditCompleteRound: (roundIndex: number) => void;
-}> = ({ player, targetPoints, maxRounds, onUpdateName, onRemove, canRemove }) => {
+}> = ({ player, allPlayers, targetPoints, maxRounds, onUpdateName, onRemove, canRemove }) => {
+
+  // Optimizar como funcion el calculo de los ganadores
   const isWinner = player.points >= targetPoints;
-  
+
+  // Función para obtener el puesto del jugador
+  const getPlayerPosition = (allPlayers: any[]) => {
+    // Ordenar jugadores por puntos de mayor a menor
+    const sortedPlayers = [...allPlayers].sort((a, b) => b.points - a.points);
+    
+    // Encontrar la posición del jugador actual
+    const position = sortedPlayers.findIndex(p => p.id === player.id) + 1;
+    
+    if (position === 1) return { label: "GANADOR", color: 'green', position: position };
+    if (position === 2) return { label: "2º PUESTO", color: 'yellow', position: position };
+    if (position === 3) return { label: "3º PUESTO", color: 'red', position: position };
+    
+    return { label: `${position}º PUESTO`, color: 'gray', position: position };
+  };
+
   // Historial de puntos acumulados y sumados por ronda
   let history: { total: number; sum: number }[] = [];
   let acc = 0;
@@ -62,8 +80,6 @@ export const PlayerGridCard: React.FC<{
                 <span className={`text-xs font-medium ${
                   realValue > 0
                     ? 'text-uno-red dark:text-uno-red-light'
-                    : realValue < 0
-                    ? 'text-uno-yellow dark:text-uno-yellow-light'
                     : 'text-uno-green dark:text-uno-green-light'
                 }`}>
                   {realValue > 0 ? `+${realValue}` : realValue < 0 ? `${realValue}` : '0'}
@@ -76,20 +92,24 @@ export const PlayerGridCard: React.FC<{
         );
       })}
       {/* Total */}
-      <div className="px-4 py-3 text-center border-b border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center">
-        <div className={`text-2xl font-bold ${
-          isWinner
-            ? 'text-uno-green dark:text-uno-green-light'
-            : 'text-gray-900 dark:text-gray-100'
-        }`}>
-          {player.points}
-        </div>
-        {isWinner && (
-          <div className="text-xs text-uno-green dark:text-uno-green-light font-medium">
-            ¡GANADOR!
+      {(() => {
+        const position = getPlayerPosition(allPlayers);
+        return (
+          <div className="px-4 py-3 text-center border-b border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center">
+            <div className={`text-2xl font-bold text-white dark:text-white}`}>
+              {player.points}
+            </div>
+            {/* Si el puntaje de un solo jugador, es mayor al settings.targetPoints, mostrar el puesto */}
+            {player.points > targetPoints && (
+              <div className={`text-xs font-medium ${
+                `text-uno-${position.color} dark:text-uno-${position.color}-light`
+                }`}>
+                  {position.label}
+                </div>
+            )}
           </div>
-        )}
-      </div>
+        );
+      })()}
     </React.Fragment>
   );
 };

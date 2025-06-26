@@ -1,14 +1,13 @@
 import React from 'react';
-import type { GameControlsProps } from '../types';
+import type { GameControlsProps } from '../types/components/GameControls.types';
+import { Button } from './Button';
 
 export const GameControls: React.FC<GameControlsProps> = ({
   targetPoints,
   playerCount,
   hasPendingPoints,
-  canUndo,
   devMode,
   onAddRound,
-  onUndoLastRound,
   onNewGame,
   onLoadExampleGame,
   onResetGame
@@ -36,43 +35,34 @@ export const GameControls: React.FC<GameControlsProps> = ({
         
         {/* Botones de control */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"> 
-          <button
+          <Button
             onClick={onAddRound}
-            disabled={playerCount < 2}
-            className="w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-uno-blue text-white hover:bg-uno-blue-dark focus:ring-uno-blue disabled:opacity-50 disabled:cursor-not-allowed"
+            variant="blue"
           >
             {hasPendingPoints ? 'Confirmar Ronda' : 'Agregar Ronda'}
-          </button>
+          </Button>
           
-          <button
-            onClick={onUndoLastRound}
-            disabled={!canUndo}
-            className="w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Deshacer
-          </button>
-          
-          <button
+          <Button
             onClick={onNewGame}
-            className="w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-uno-green text-white hover:bg-uno-green-dark focus:ring-uno-green"
+            variant="green"
           >
             Nuevo Juego
-          </button>
+          </Button>
 
           {devMode && onLoadExampleGame && onResetGame && (
             <>
-              <button
+              <Button
                 onClick={onLoadExampleGame}
-                className="w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-uno-yellow text-uno-black hover:bg-uno-yellow-dark focus:ring-uno-yellow"
+                variant="yellow"
               >
                 Cargar Ejemplo
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={onResetGame}
-                className="w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-uno-red text-white hover:bg-uno-red-dark focus:ring-uno-red"
+                variant="red"
               >
                 Resetear
-              </button>
+              </Button>
             </>
           )}
         </div>

@@ -3,6 +3,7 @@ import SunIcon from '../assets/SunIcon';
 import MoonIcon from '../assets/MoonIcon';
 import SettingsIcon from '../assets/SettingsIcon';
 import type { HeaderProps } from '../types';
+import { Button } from './Button';
 
 export const Header: React.FC<HeaderProps> = ({
   resolvedTheme,
@@ -24,26 +25,26 @@ export const Header: React.FC<HeaderProps> = ({
           
           <div className="flex items-center space-x-4">
             {/* Toggle de tema */}
-            <button
+            <Button
               onClick={onThemeToggle}
-              className="p-2 rounded-lg bg-uno-yellow hover:bg-uno-yellow-dark transition-colors"
-              title="Cambiar tema"
+              variant="yellow"
+              aria-label="Cambiar tema"
             >
               {resolvedTheme === 'dark' ? (
                 <SunIcon />
               ) : (
                 <MoonIcon />
               )}
-            </button>
+            </Button>
 
             {/* Configuración */}
-            <button
+            <Button
               onClick={onOpenSettings}
-              className="p-2 rounded-lg bg-uno-yellow hover:bg-uno-yellow-dark transition-colors"
-              title="Configuración"
+              variant="yellow"
+              aria-label="Configuración"
             >
               <SettingsIcon />
-            </button>
+            </Button>
           </div>
         </div>
       </div>

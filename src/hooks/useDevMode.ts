@@ -19,49 +19,45 @@ export const useDevMode = ({ gameState }: UseDevModeProps) => {
         id: 'r1',
         winnerId: 'p1',
         points: [
-          { playerId: 'p1', points: 0, cards: [], directPoints: 0 },
-          { playerId: 'p2', points: 10, cards: [], directPoints: 10 },
-          { playerId: 'p3', points: 20, cards: [], directPoints: 20 },
-          { playerId: 'p4', points: 30, cards: [], directPoints: 30 }
+          { playerId: 'p1', roundId: 'r1', points: 0, cards: [], directPoints: 0 },
+          { playerId: 'p2', roundId: 'r1', points: 10, cards: [], directPoints: 10 },
+          { playerId: 'p3', roundId: 'r1', points: 20, cards: [], directPoints: 20 },
+          { playerId: 'p4', roundId: 'r1', points: 30, cards: [], directPoints: 30 }
         ],
-        timestamp: Date.now(),
         subtractedAmount: 6
       },
       {
         id: 'r2',
         winnerId: 'p3',
         points: [
-          { playerId: 'p1', points: 15, cards: [], directPoints: 15 },
-          { playerId: 'p2', points: 0, cards: [], directPoints: 0 },
-          { playerId: 'p3', points: 20, cards: [], directPoints: 20 },
-          { playerId: 'p4', points: 25, cards: [], directPoints: 25 }
+          { playerId: 'p1', roundId: 'r2', points: 15, cards: [], directPoints: 15 },
+          { playerId: 'p2', roundId: 'r2', points: 0, cards: [], directPoints: 0 },
+          { playerId: 'p3', roundId: 'r2', points: 20, cards: [], directPoints: 20 },
+          { playerId: 'p4', roundId: 'r2', points: 25, cards: [], directPoints: 25 }
         ],
-        timestamp: Date.now() + 1,
         subtractedAmount: 6
       },
       {
         id: 'r3',
         winnerId: 'p4',
         points: [
-          { playerId: 'p1', points: 5, cards: [], directPoints: 5 },
-          { playerId: 'p2', points: 10, cards: [], directPoints: 10 },
-          { playerId: 'p3', points: 15, cards: [], directPoints: 15 },
-          { playerId: 'p4', points: 0, cards: [], directPoints: 0 }
+          { playerId: 'p1', roundId: 'r3', points: 5, cards: [], directPoints: 5 },
+          { playerId: 'p2', roundId: 'r3', points: 10, cards: [], directPoints: 10 },
+          { playerId: 'p3', roundId: 'r3', points: 15, cards: [], directPoints: 15 },
+          { playerId: 'p4', roundId: 'r3', points: 0, cards: [], directPoints: 0 }
         ],
-        timestamp: Date.now() + 2,
         subtractedAmount: 0
       },
       {
         id: 'r4',
         winnerId: 'p2',
         points: [
-          { playerId: 'p1', points: 8, cards: [], directPoints: 8 },
-          { playerId: 'p2', points: 0, cards: [], directPoints: 0 },
-          { playerId: 'p3', points: 12, cards: [], directPoints: 12 },
-          { playerId: 'p4', points: 18, cards: [], directPoints: 18 }
+          { playerId: 'p1', roundId: 'r4', points: 8, cards: [], directPoints: 8 },
+          { playerId: 'p2', roundId: 'r4', points: 0, cards: [], directPoints: 0 },
+          { playerId: 'p3', roundId: 'r4', points: 12, cards: [], directPoints: 12 },
+          { playerId: 'p4', roundId: 'r4', points: 18, cards: [], directPoints: 18 }
         ],
-        timestamp: Date.now() + 3,
-        subtractedAmount: 0 
+        subtractedAmount: 0
       }
     ];
 
@@ -92,7 +88,8 @@ export const useDevMode = ({ gameState }: UseDevModeProps) => {
         winnerSubtractType: 'percent',
         winnerSubtractValue: 10
       },
-      history: []
+      pendingPoints: [],
+      currentRoundId: null
     }));
     window.location.reload();
   }, [gameState.settings]);

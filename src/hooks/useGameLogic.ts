@@ -2,30 +2,84 @@ import { useState, useEffect } from 'react';
 import type { PlayerPoints, CardSelection, UseGameLogicProps } from '../types';
 
 
-export const useGameLogic = ({ gameState, addRound, editRound, getWinner }: UseGameLogicProps) => {
+export const useGameLogic = ({ gameState, addRound, editRound, getWinner, updatePendingPoints, clearPendingPoints, showAlert, setCurrentRoundId }: UseGameLogicProps) => {
   const [showCardsModal, setShowCardsModal] = useState(false);
   const [showPlayerModal, setShowPlayerModal] = useState(false);
   const [pendingWinner, setPendingWinner] = useState<string | null>(null);
-  const [pendingPoints, setPendingPoints] = useState<PlayerPoints[]>([]);
-  const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
   const [editingCompleteRound, setEditingCompleteRound] = useState<number | null>(null);
+  const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
+
+  // Usar puntos pendientes del estado global
+  const pendingPoints = gameState.pendingPoints || [];
+  const currentRoundId = gameState.currentRoundId;
 
   // Verificar ganador
   useEffect(() => {
     const winner = getWinner();
     if (winner) {
-      alert(`¡${winner.name} ha ganado la partida con ${winner.points} puntos!`);
+      showAlert({
+        title: '¡Felicidades!',
+        message: `¡${winner.name} ha ganado la partida con ${winner.points} puntos!`,
+        type: 'success',
+        isOpen: true,
+        onClose: () => {
+          setShowPlayerModal(false);
+        }
+      });
     }
   }, [gameState.players, getWinner]);
 
+  // Función para generar un ID único para la ronda
+  const generateRoundId = () => {
+    return `round-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  };
+
+  // Función para validar que no haya conflictos de rondas
+  const validateRoundConflict = (newRoundId: string) => {
+
+    // Solo hay conflicto si hay puntos pendientes reales y es una ronda diferente
+    if (pendingPoints.length > 0 && currentRoundId && currentRoundId !== newRoundId) {
+      showAlert({
+        title: 'Error',
+        message: 'Ya tienes puntos pendientes de otra ronda. Debes confirmar o cancelar esa ronda antes de continuar.',
+        type: 'error',
+        isOpen: true,
+        onClose: () => {
+          setShowPlayerModal(false);
+        }
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleAddRound = () => {
     if (gameState.players.length < 2) {
-      alert('Necesitas al menos 2 jugadores para jugar.');
+      showAlert({
+        title: 'Error',
+        message: 'Necesitas al menos 2 jugadores para jugar.',
+        type: 'error',
+        isOpen: true,
+        onClose: () => {
+          setShowPlayerModal(false);
+        }
+      });
       return;
     }
+
+    // Si ya hay puntos pendientes, abrir directamente el modal de confirmación
+    if (pendingPoints.length > 0) {
+      setShowPlayerModal(true);
+      return;
+    }
+
+    const newRoundId = generateRoundId();
+    if (!validateRoundConflict(newRoundId)) return;
+
     // Solo resetear puntos pendientes si no hay ninguno (nueva ronda)
     if (pendingPoints.length === 0) {
-      setPendingPoints([]);
+      clearPendingPoints();
+      setCurrentRoundId(newRoundId);
     }
     setShowPlayerModal(true);
   };
@@ -43,14 +97,17 @@ export const useGameLogic = ({ gameState, addRound, editRound, getWinner }: UseG
         return sum + (selection.card.value * selection.quantity);
       }, 0) + directPoints;
 
-      setPendingPoints(prev =>
-        prev.filter(p => p.playerId !== editingPlayerId).concat([{
+      const updatedPendingPoints = pendingPoints
+        .filter((p: PlayerPoints) => p.playerId !== editingPlayerId)
+        .concat([{
           playerId: editingPlayerId,
+          roundId: currentRoundId || generateRoundId(),
           points: totalPoints,
           cards: selections,
           directPoints
-        }])
-      );
+        }]);
+
+      updatePendingPoints(updatedPendingPoints);
       setEditingPlayerId(null);
       setShowCardsModal(false);
       setShowPlayerModal(true);
@@ -67,12 +124,18 @@ export const useGameLogic = ({ gameState, addRound, editRound, getWinner }: UseG
     // Agregar puntos pendientes solo para el jugador seleccionado
     const newPendingPoints: PlayerPoints[] = [{
       playerId: pendingWinner,
+      roundId: currentRoundId || generateRoundId(),
       points: totalPoints,
       cards: selections,
       directPoints
     }];
 
-    setPendingPoints(prev => [...prev, ...newPendingPoints]);
+    // Filtrar puntos existentes del jugador y agregar los nuevos
+    const updatedPendingPoints = pendingPoints
+      .filter((p: PlayerPoints) => p.playerId !== pendingWinner)
+      .concat(newPendingPoints);
+
+    updatePendingPoints(updatedPendingPoints);
     setPendingWinner(null);
     setShowCardsModal(false);
     setShowPlayerModal(true);
@@ -98,21 +161,49 @@ export const useGameLogic = ({ gameState, addRound, editRound, getWinner }: UseG
   const handleConfirmRound = () => {
     if (pendingPoints.length === 0) return;
 
-    // Agrupar puntos por jugador
+    // Consolidar puntos por jugador (en caso de duplicados)
     const pointsByPlayer = new Map<string, PlayerPoints>();
     pendingPoints.forEach(point => {
       const existing = pointsByPlayer.get(point.playerId);
       if (existing) {
-        pointsByPlayer.set(point.playerId, {
+        // Sumar puntos y combinar cartas
+        const mergedPoint: PlayerPoints = {
           ...existing,
           points: existing.points + point.points,
           cards: [...existing.cards, ...point.cards],
           directPoints: (existing.directPoints || 0) + (point.directPoints || 0)
-        });
+        };
+        pointsByPlayer.set(point.playerId, mergedPoint);
       } else {
         pointsByPlayer.set(point.playerId, point);
       }
     });
+
+    const uniquePlayersWithPoints = pointsByPlayer.size;
+
+    // Si estamos editando una ronda completa, todos los jugadores deben estar en pendingPoints
+    // Si estamos agregando una nueva ronda, verificar que haya exactamente un ganador (con 0 puntos)
+    const expectedLength = editingCompleteRound !== null ? gameState.players.length : gameState.players.length - 1;
+
+    // Contar solo jugadores que realmente tienen puntos (cartas o puntos directos > 0)
+    const playersWithRealPoints = Array.from(pointsByPlayer.values()).filter(point =>
+      point.cards.length > 0 || (point.directPoints && point.directPoints > 0)
+    ).length;
+
+    if (playersWithRealPoints !== expectedLength) {
+      showAlert({
+        title: 'Error',
+        message: editingCompleteRound !== null
+          ? 'Todos los jugadores deben tener puntos asignados'
+          : 'Todos los jugadores excepto el ganador deben tener puntos asignados',
+        type: 'error',
+        isOpen: true,
+        onClose: () => {
+          setShowPlayerModal(false);
+        }
+      });
+      return;
+    }
 
     // Crear puntos para todos los jugadores, asignando 0 a los que no tienen puntos pendientes
     const finalPoints: PlayerPoints[] = gameState.players.map((player: any) => {
@@ -120,9 +211,10 @@ export const useGameLogic = ({ gameState, addRound, editRound, getWinner }: UseG
       if (existingPoints) {
         return existingPoints;
       } else {
-        // Asignar 0 puntos a jugadores que no tienen puntos pendientes
+        // Asignar 0 puntos a jugadores que no tienen puntos pendientes (ganador)
         return {
           playerId: player.id,
+          roundId: currentRoundId || generateRoundId(),
           points: 0,
           cards: [],
           directPoints: 0
@@ -130,12 +222,32 @@ export const useGameLogic = ({ gameState, addRound, editRound, getWinner }: UseG
       }
     });
 
-    // Encontrar el ganador (el que tiene 0 puntos)
-    const winner = finalPoints.find(point => point.points === 0);
+    // Encontrar el ganador (el que tiene 0 puntos totales y no tiene cartas ni puntos directos)
+    const winner = finalPoints.find(point =>
+      point.points === 0 && point.cards.length === 0 && (point.directPoints === 0 || !point.directPoints)
+    );
+    const playersWithoutPoints = finalPoints.filter(point =>
+      point.points === 0 && point.cards.length === 0 && (point.directPoints === 0 || !point.directPoints)
+    );
+
+    // Validar que exactamente un jugador sea ganador
+    if (!winner || playersWithoutPoints.length !== 1) {
+      showAlert({
+        title: 'Error',
+        message: 'Exactamente un jugador debe ser ganador (sin cartas ni puntos directos)',
+        type: 'error',
+        isOpen: true,
+        onClose: () => {
+          setShowPlayerModal(false);
+        }
+      });
+      return;
+    }
 
     if (winner) {
       addRound(winner.playerId, finalPoints);
-      setPendingPoints([]);
+      updatePendingPoints([]);
+      setCurrentRoundId(null);
       setShowPlayerModal(false);
     }
   };
@@ -149,13 +261,15 @@ export const useGameLogic = ({ gameState, addRound, editRound, getWinner }: UseG
     // Cargar todos los puntos de esa ronda como puntos pendientes
     const roundPoints: PlayerPoints[] = round.points.map((p: any) => ({
       playerId: p.playerId,
+      roundId: p.roundId || generateRoundId(),
       points: p.points,
       cards: p.cards || [],
       directPoints: p.directPoints || 0
     }));
 
-    setPendingPoints(roundPoints);
+    updatePendingPoints(roundPoints);
     setEditingCompleteRound(roundIndex);
+    setCurrentRoundId(roundPoints[0]?.roundId || generateRoundId());
     setShowPlayerModal(true);
   };
 
@@ -163,16 +277,34 @@ export const useGameLogic = ({ gameState, addRound, editRound, getWinner }: UseG
   const handleConfirmCompleteRoundEdit = () => {
     if (editingCompleteRound === null) return;
 
-    // Encontrar el ganador (el que tiene 0 puntos)
-    const winner = pendingPoints.find(point => point.points === 0);
+    // Encontrar el ganador (el que tiene 0 puntos totales y no tiene cartas ni puntos directos)
+    const winner = pendingPoints.find(point =>
+      point.points === 0 && point.cards.length === 0 && (point.directPoints === 0 || !point.directPoints)
+    );
+    const playersWithoutPoints = pendingPoints.filter(point =>
+      point.points === 0 && point.cards.length === 0 && (point.directPoints === 0 || !point.directPoints)
+    );
 
-    if (winner) {
-      // Usar la función editRound del hook para actualizar el estado
-      editRound(editingCompleteRound, pendingPoints);
-      setPendingPoints([]);
-      setEditingCompleteRound(null);
-      setShowPlayerModal(false);
+    // Validar que exactamente un jugador sea ganador
+    if (!winner || playersWithoutPoints.length !== 1) {
+      showAlert({
+        title: 'Error',
+        message: 'Exactamente un jugador debe ser ganador (sin cartas ni puntos directos)',
+        type: 'error',
+        isOpen: true,
+        onClose: () => {
+          setShowPlayerModal(false);
+        }
+      });
+      return;
     }
+
+    // Usar la función editRound del hook para actualizar el estado
+    editRound(editingCompleteRound, pendingPoints);
+    updatePendingPoints([]);
+    setEditingCompleteRound(null);
+    setCurrentRoundId(null);
+    setShowPlayerModal(false);
   };
 
   // Obtener las selecciones iniciales para editar
@@ -196,6 +328,7 @@ export const useGameLogic = ({ gameState, addRound, editRound, getWinner }: UseG
     editingCompleteRound,
     hasPendingPoints,
     editingPlayerId,
+    currentRoundId,
 
     // Handlers
     handleAddRound,
@@ -210,6 +343,7 @@ export const useGameLogic = ({ gameState, addRound, editRound, getWinner }: UseG
 
     // Setters
     setShowCardsModal,
-    setShowPlayerModal
+    setShowPlayerModal,
+    setCurrentRoundId
   };
 }; 

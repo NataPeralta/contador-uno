@@ -18,7 +18,8 @@ const defaultSettings: GameSettings = {
 const defaultState: GameState = {
   players: [],
   settings: defaultSettings,
-  history: []
+  pendingPoints: [],
+  currentRoundId: null
 };
 
 export const useGameState = () => {
@@ -69,7 +70,7 @@ export const useGameState = () => {
           // Para este jugador, solo agregarlo con 0 puntos
           points: [
             ...round.points,
-            { playerId: 'TEMP', points: 0, cards: [], directPoints: 0 }
+            { playerId: 'TEMP', roundId: round.id, points: 0, cards: [], directPoints: 0 }
           ]
         }));
         // Calcular el puntaje inicial según el setting
@@ -106,13 +107,10 @@ export const useGameState = () => {
 
   // Eliminar jugador
   const removePlayer = useCallback((playerId: string) => {
-    if (confirm("Desea eliminar este jugador?")) {
-      updateState(state => ({
-        ...state,
-        players: state.players.filter(p => p.id !== playerId)
-      }));
-    }
-    return;
+    updateState(state => ({
+      ...state,
+      players: state.players.filter(p => p.id !== playerId)
+    }));
   }, [updateState]);
 
   // Actualizar nombre del jugador
@@ -133,6 +131,31 @@ export const useGameState = () => {
     }));
   }, [updateState]);
 
+  // Actualizar puntos pendientes
+  const updatePendingPoints = useCallback((pendingPoints: PlayerPoints[]) => {
+    updateState(state => ({
+      ...state,
+      pendingPoints
+    }));
+  }, [updateState]);
+
+  // Limpiar puntos pendientes
+  const clearPendingPoints = useCallback(() => {
+    updateState(state => ({
+      ...state,
+      pendingPoints: [],
+      currentRoundId: null
+    }));
+  }, [updateState]);
+
+  // Actualizar currentRoundId
+  const setCurrentRoundId = useCallback((roundId: string | null) => {
+    updateState(state => ({
+      ...state,
+      currentRoundId: roundId
+    }));
+  }, [updateState]);
+
   // Agregar ronda
   const addRound = useCallback((winnerId: string, playerPoints: PlayerPoints[]) => {
     updateState(state => {
@@ -141,49 +164,48 @@ export const useGameState = () => {
       let subtractedAmount = 0; // Para guardar cuánto se restó
 
       if (settings.winnerSubtractsPoints && settings.winnerSubtractValue && winnerId) {
-        // Buscar el ganador
-        const winnerIdx = adjustedPlayerPoints.findIndex(p => p.playerId === winnerId);
-        // Si el ganador no está en la lista (porque tiene 0 puntos), agregarlo
-        if (winnerIdx === -1) {
-          adjustedPlayerPoints.push({ playerId: winnerId, points: 0, cards: [], directPoints: 0 });
-        }
-        // Calcular cuánto restar
-        let subtract = 0;
-        if (settings.winnerSubtractType === 'fixed') {
-          subtract = settings.winnerSubtractValue;
-        } else if (settings.winnerSubtractType === 'percent') {
-          // Sumar todos los puntos de la ronda (de los demás jugadores)
-          const totalPoints = adjustedPlayerPoints
-            .filter(p => p.playerId !== winnerId)
-            .reduce((acc, p) => acc + p.points, 0);
-          // Usar Math.floor para números enteros y agregar límite mínimo de 10
-          subtract = Math.floor((settings.winnerSubtractValue / 100) * totalPoints);
-          // Si el resultado es menor a 10, no restar nada
-          if (subtract < 10) {
-            subtract = 0;
-          }
-        }
-
-        // Guardar cuánto se restó
-        subtractedAmount = subtract;
-
-        // Restar al ganador
-        adjustedPlayerPoints = adjustedPlayerPoints.map(p =>
-          p.playerId === winnerId
-            ? { ...p, points: p.points - subtract }
-            : p
+        // Buscar el ganador real (el que no tiene cartas ni puntos directos)
+        const winner = adjustedPlayerPoints.find(p =>
+          p.playerId === winnerId &&
+          (!p.cards || p.cards.length === 0) &&
+          (!p.directPoints || p.directPoints === 0)
         );
+
+        if (winner) {
+          // Calcular cuánto restar
+          let subtract = 0;
+          if (settings.winnerSubtractType === 'fixed') {
+            subtract = settings.winnerSubtractValue;
+          } else if (settings.winnerSubtractType === 'percent') {
+            // Sumar todos los puntos de la ronda (de los demás jugadores)
+            const totalPoints = adjustedPlayerPoints
+              .filter(p => p.playerId !== winnerId)
+              .reduce((acc, p) => acc + p.points, 0);
+            // Usar Math.floor para números enteros y agregar límite mínimo de 10
+            subtract = Math.floor((settings.winnerSubtractValue / 100) * totalPoints);
+            // Si el resultado es menor a 10, no restar nada
+            if (subtract < 10) {
+              subtract = 0;
+            }
+          }
+
+          // Guardar cuánto se restó
+          subtractedAmount = subtract;
+
+          // Restar al ganador
+          adjustedPlayerPoints = adjustedPlayerPoints.map(p =>
+            p.playerId === winnerId
+              ? { ...p, points: p.points - subtract }
+              : p
+          );
+        }
       }
       const newRound: Round = {
         id: generateUniqueId(),
         winnerId,
         points: adjustedPlayerPoints,
-        timestamp: Date.now(),
         subtractedAmount // Agregar información sobre cuánto se restó
       };
-
-      // Guardar estado anterior para undo
-      const historyEntry = { ...state };
 
       // Calcular puntos totales para cada jugador
       const updatedPlayers = state.players.map(player => {
@@ -199,21 +221,7 @@ export const useGameState = () => {
 
       return {
         ...state,
-        players: updatedPlayers,
-        history: [...state.history, historyEntry]
-      };
-    });
-  }, [updateState]);
-
-  // Deshacer última ronda
-  const undoLastRound = useCallback(() => {
-    updateState(state => {
-      if (state.history.length === 0) return state;
-
-      const previousState = state.history[state.history.length - 1];
-      return {
-        ...previousState,
-        history: state.history.slice(0, -1)
+        players: updatedPlayers
       };
     });
   }, [updateState]);
@@ -223,7 +231,8 @@ export const useGameState = () => {
     updateState(state => ({
       ...state,
       players: state.players.map(p => ({ ...p, points: 0, rounds: [] })),
-      history: []
+      pendingPoints: [],
+      currentRoundId: null
     }));
   }, [updateState]);
 
@@ -251,7 +260,9 @@ export const useGameState = () => {
       // Calcular si se debe restar algo al ganador
       let subtractedAmount = 0;
       const settings = state.settings;
-      const winner = updatedPoints.find(p => p.points === 0);
+      const winner = updatedPoints.find(p =>
+        (!p.cards || p.cards.length === 0) && (!p.directPoints || p.directPoints === 0)
+      );
 
       if (settings.winnerSubtractsPoints && settings.winnerSubtractValue && winner) {
         if (settings.winnerSubtractType === 'fixed') {
@@ -308,8 +319,10 @@ export const useGameState = () => {
     removePlayer,
     updatePlayerName,
     updateSettings,
+    updatePendingPoints,
+    clearPendingPoints,
+    setCurrentRoundId,
     addRound,
-    undoLastRound,
     newGame,
     getWinner,
     getPlayerById,

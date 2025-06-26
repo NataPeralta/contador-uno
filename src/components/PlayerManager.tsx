@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import type { PlayerManagerProps } from '../types';
 import ClockIcon from '../assets/ClockIcon';
 import PlayersIcon from '../assets/PlayersIcon';
+import { Button } from './Button';
+import { Input } from './Input';
 
 
 export const PlayerManager: React.FC<PlayerManagerProps> = ({
   players,
   pendingPoints,
+  currentRoundId,
+  editingCompleteRound,
   onAddPlayer,
 }) => {
   const [newPlayerName, setNewPlayerName] = useState('');
@@ -33,6 +37,18 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
 
   const hasPendingPoints = pendingPoints.length > 0;
 
+  // Función para determinar el texto de la ronda
+  const getRoundText = () => {
+    if (editingCompleteRound !== null) {
+      return `Ronda ${editingCompleteRound + 1}`;
+    }
+    if (currentRoundId) {
+      // Si es una nueva ronda, mostrar "Nueva Ronda"
+      return "Nueva Ronda";
+    }
+    return "Ronda";
+  };
+
   return (
     <div className="mb-8">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
@@ -42,21 +58,21 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
         
         {/* Agregar jugador */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          <input
+          <Input
             type="text"
             value={newPlayerName}
             onChange={(e) => setNewPlayerName(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder="Nombre del jugador"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-uno-blue focus:border-transparent flex-1"
           />
-          <button
+          <Button
             onClick={handleAddPlayer}
             disabled={!newPlayerName.trim()}
-            className="px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-uno-blue text-white hover:bg-uno-blue-dark focus:ring-uno-blue disabled:opacity-50 disabled:cursor-not-allowed"
+            variant="blue"
+            aria-label="Añadir jugador"
           >
             Añadir Jugador
-          </button>
+          </Button>
         </div>
 
         {/* Puntos Pendientes - Solo mostrar si hay puntos pendientes */}
@@ -64,7 +80,7 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
           <div className="mt-6 p-4 bg-uno-red bg-opacity-10 dark:bg-uno-red dark:bg-opacity-20 rounded-lg border border-uno-red border-opacity-30 dark:border-uno-red dark:border-opacity-50">
             <h3 className="font-semibold text-uno-red dark:text-uno-red-light mb-3 flex items-center">
               <ClockIcon />
-              Puntos Pendientes de Confirmar
+              Puntos Pendientes de Confirmar - {getRoundText()}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {players.map(player => {

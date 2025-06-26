@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { 
   useGameState, 
   useTheme, 
-  useGameLogic, 
-  useDevMode 
+  useGameLogic,
+  useDevMode
 } from './hooks';
 import { 
   Header, 
@@ -13,7 +13,9 @@ import {
   LoadingSpinner, 
   CardsModal, 
   PlayerSelectionModal, 
-  SettingsModal 
+  SettingsModal,
+  Confirm,
+  Alert
 } from './components';
 
 function App() {
@@ -24,14 +26,30 @@ function App() {
     removePlayer,
     updatePlayerName,
     updateSettings,
+    updatePendingPoints,
+    clearPendingPoints,
+    setCurrentRoundId,
     addRound,
-    undoLastRound,
     newGame,
     getWinner,
     editRound
   } = useGameState();
 
   const { resolvedTheme, changeTheme } = useTheme(gameState.settings.theme);
+
+  const { devMode, handleLoadExampleGame, handleResetGame } = useDevMode({ gameState });
+
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [playerToDelete, setPlayerToDelete] = useState<string | null>(null);
+  const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const showAlert = (alert: { title: string; message: string; type: 'success' | 'warning' | 'error' }) => {
+    setErrorMessage(alert.message);
+    setShowErrorAlert(true);
+  };
 
   const {
     showCardsModal,
@@ -51,11 +69,7 @@ function App() {
     setShowCardsModal,
     setShowPlayerModal,
     editingPlayerId
-  } = useGameLogic({ gameState, addRound, editRound, getWinner });
-
-  const { devMode, handleLoadExampleGame, handleResetGame } = useDevMode({ gameState });
-
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  } = useGameLogic({ gameState, addRound, editRound, getWinner, updatePendingPoints, clearPendingPoints, showAlert, setCurrentRoundId });
 
   // Sincronizar tema con configuración
   useEffect(() => {
@@ -81,8 +95,25 @@ function App() {
         addPlayer(player.name);
       });
     } else {
-      // Si ya hay jugadores, solo reiniciar puntuaciones
-      newGame();
+      // Si ya hay jugadores, mostrar confirmación
+      setShowNewGameConfirm(true);
+    }
+  };
+
+  const confirmNewGame = () => {
+    newGame();
+    setShowNewGameConfirm(false);
+  };
+
+  const handleDeletePlayer = (playerId: string) => {
+    setPlayerToDelete(playerId);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeletePlayer = () => {
+    if (playerToDelete) {
+      removePlayer(playerToDelete);
+      setPlayerToDelete(null);
     }
   };
 
@@ -108,10 +139,9 @@ function App() {
           targetPoints={gameState.settings.targetPoints}
           playerCount={gameState.players?.length ?? 0}
           hasPendingPoints={hasPendingPoints}
-          canUndo={gameState.history.length > 0}
+          canUndo={false}
           devMode={devMode}
           onAddRound={handleAddRound}
-          onUndoLastRound={undoLastRound}
           onNewGame={handleNewGame}
           onLoadExampleGame={handleLoadExampleGame}
           onResetGame={handleResetGame}
@@ -121,6 +151,8 @@ function App() {
         <PlayerManager
           players={gameState.players ?? []}
           pendingPoints={pendingPoints}
+          currentRoundId={gameState.currentRoundId}
+          editingCompleteRound={editingCompleteRound}
           onAddPlayer={addPlayer}
         />
 
@@ -132,7 +164,7 @@ function App() {
                 players={gameState.players}
                 targetPoints={gameState.settings.targetPoints}
                 onUpdatePlayerName={updatePlayerName}
-                onRemovePlayer={removePlayer}
+                onRemovePlayer={handleDeletePlayer}
                 canRemovePlayer={canRemovePlayer}
                 onEditCompleteRound={handleEditCompleteRound}
               />
@@ -152,6 +184,7 @@ function App() {
         hasPendingPoints={hasPendingPoints}
         onEditPendingPoints={handleEditPendingPoints}
         title={editingCompleteRound !== null ? `Editar Ronda ${editingCompleteRound + 1}` : undefined}
+        currentRound={editingCompleteRound !== null ? `Ronda ${editingCompleteRound + 1}` : undefined}
         settings={gameState.settings}
       />
 
@@ -169,6 +202,42 @@ function App() {
         onClose={() => setShowSettingsModal(false)}
         settings={gameState.settings}
         onUpdateSettings={updateSettings}
+      />
+
+      <Confirm
+        isOpen={showDeleteConfirm}
+        onClose={() => {
+          setShowDeleteConfirm(false);
+          setPlayerToDelete(null);
+        }}
+        onConfirm={confirmDeletePlayer}
+        title="Confirmar eliminación"
+        message="¿Estás seguro de que quieres eliminar este jugador? Esta acción no se puede deshacer."
+        type="danger"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+      />
+
+      <Confirm
+        isOpen={showNewGameConfirm}
+        onClose={() => setShowNewGameConfirm(false)}
+        onConfirm={confirmNewGame}
+        title="Nuevo Juego"
+        message="¿Estás seguro de que quieres iniciar un nuevo juego? Se borrarán todos los puntos y rondas actuales."
+        type="warning"
+        confirmText="Iniciar Nuevo Juego"
+        cancelText="Cancelar"
+      />
+
+      <Alert
+        isOpen={showErrorAlert}
+        onClose={() => {
+          setShowErrorAlert(false);
+          setErrorMessage('');
+        }}
+        title="Error"
+        message={errorMessage}
+        type="error"
       />
     </div>
   );
