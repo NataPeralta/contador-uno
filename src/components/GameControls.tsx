@@ -4,7 +4,6 @@ import { Button } from './Button';
 
 export const GameControls: React.FC<GameControlsProps> = ({
   targetPoints,
-  playerCount,
   hasPendingPoints,
   devMode,
   onAddRound,

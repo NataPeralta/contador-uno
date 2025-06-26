@@ -179,8 +179,6 @@ export const useGameLogic = ({ gameState, addRound, editRound, getWinner, update
       }
     });
 
-    const uniquePlayersWithPoints = pointsByPlayer.size;
-
     // Si estamos editando una ronda completa, todos los jugadores deben estar en pendingPoints
     // Si estamos agregando una nueva ronda, verificar que haya exactamente un ganador (con 0 puntos)
     const expectedLength = editingCompleteRound !== null ? gameState.players.length : gameState.players.length - 1;
