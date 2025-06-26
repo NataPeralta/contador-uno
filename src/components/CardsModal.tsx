@@ -23,7 +23,7 @@ export const CardsModal: React.FC<CardsModalProps> = ({
   initialDirectPoints = 0
 }) => {
   const [selectedCards, setSelectedCards] = useState<Map<string, number>>(new Map());
-  const [directPoints, setDirectPoints] = useState<number>(initialDirectPoints);
+  const [directPoints, setDirectPoints] = useState<string>(initialDirectPoints > 0 ? initialDirectPoints.toString() : '');
 
   // Inicializar con las selecciones previas si existen
   React.useEffect(() => {
@@ -37,11 +37,11 @@ export const CardsModal: React.FC<CardsModalProps> = ({
     } else {
       setSelectedCards(new Map());
     }
-    setDirectPoints(initialDirectPoints);
+    setDirectPoints(initialDirectPoints > 0 ? initialDirectPoints.toString() : '');
   }, [initialSelections, initialDirectPoints, isOpen]);
 
   const totalPoints = useMemo(() => {
-    let total = directPoints;
+    let total = directPoints ? Number(directPoints) || 0 : 0;
     selectedCards.forEach((quantity, cardId) => {
       const card = UNO_CARDS.find(c => c.id === cardId);
       if (card) {
@@ -85,7 +85,7 @@ export const CardsModal: React.FC<CardsModalProps> = ({
       }
     });
     
-    onConfirm(selections, directPoints);
+    onConfirm(selections, directPoints ? Number(directPoints) || 0 : 0);
   };
 
   const handleBack = () => {
@@ -147,7 +147,7 @@ export const CardsModal: React.FC<CardsModalProps> = ({
             type="number"
             min="0"
             value={directPoints}
-            onChange={(e) => setDirectPoints(Number(e.target.value))}
+            onChange={(e) => setDirectPoints(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-uno-blue focus:border-transparent"
             placeholder="0"
           />
