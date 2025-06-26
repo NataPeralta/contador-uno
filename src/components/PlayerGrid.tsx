@@ -22,7 +22,6 @@ export const PlayerGrid: React.FC<PlayerGridProps> = ({
 
   // Máximo número de rondas
   const maxRounds = Math.max(...players.map(p => p.rounds.length));
-  const columns = 2 + maxRounds; // Jugador + rondas + total
 
   return (
     <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb:bg-uno-blue/30">
