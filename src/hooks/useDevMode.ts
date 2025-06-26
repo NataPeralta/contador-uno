@@ -1,8 +1,5 @@
 import { useCallback } from 'react';
-
-interface UseDevModeProps {
-  gameState: any;
-}
+import type { UseDevModeProps } from '../types';
 
 export const useDevMode = ({ gameState }: UseDevModeProps) => {
   // Detectar devMode por query string

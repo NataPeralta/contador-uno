@@ -1,13 +1,8 @@
 import React from 'react';
 import { Modal } from './Modal';
-import type { GameSettings, TargetPoints } from '../types';
+import type { TargetPoints, SettingsModalProps } from '../types';
+import InfoIcon from '../assets/InfoIcon';
 
-interface SettingsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  settings: GameSettings;
-  onUpdateSettings: (settings: Partial<GameSettings>) => void;
-}
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
@@ -134,9 +129,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="bg-uno-blue bg-opacity-10 dark:bg-uno-blue dark:bg-opacity-20 border border-uno-blue border-opacity-30 dark:border-uno-blue dark:border-opacity-50 rounded-lg p-4">
           <div className="flex">
             <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-uno-blue dark:text-uno-blue-light" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
+             <InfoIcon />
             </div>
             <div className="ml-3">
               <h3 className="text-sm font-medium text-uno-blue dark:text-uno-blue-light">

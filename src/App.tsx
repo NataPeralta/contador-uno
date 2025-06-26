@@ -86,7 +86,7 @@ function App() {
     }
   };
 
-  const canRemovePlayer = gameState.players.length > 2;
+  const canRemovePlayer = (gameState.players?.length ?? 0) > 2;
 
   if (!isLoaded) {
     return <LoadingSpinner />;
@@ -106,7 +106,7 @@ function App() {
         {/* Controles del juego */}
         <GameControls
           targetPoints={gameState.settings.targetPoints}
-          playerCount={gameState.players.length}
+          playerCount={gameState.players?.length ?? 0}
           hasPendingPoints={hasPendingPoints}
           canUndo={gameState.history.length > 0}
           devMode={devMode}
@@ -119,13 +119,13 @@ function App() {
 
         {/* Gestión de jugadores */}
         <PlayerManager
-          players={gameState.players}
+          players={gameState.players ?? []}
           pendingPoints={pendingPoints}
           onAddPlayer={addPlayer}
         />
 
         {/* Grid de jugadores */}
-        {gameState.players.length > 0 && (
+        {(gameState.players?.length ?? 0) > 0 && (
         <div className="mb-8">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
               <PlayerGrid
@@ -145,7 +145,7 @@ function App() {
       <PlayerSelectionModal
         isOpen={showPlayerModal}
         onClose={() => setShowPlayerModal(false)}
-        players={gameState.players}
+        players={gameState.players ?? []}
         onSelectPlayer={handlePlayerSelect}
         pendingPoints={pendingPoints}
         onConfirmRound={editingCompleteRound !== null ? handleConfirmCompleteRoundEdit : handleConfirmRound}

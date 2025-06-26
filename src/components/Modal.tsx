@@ -1,13 +1,6 @@
 import React from 'react';
-
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  children: React.ReactNode;
-  footer?: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-}
+import CloseIcon from '../assets/CloseIcon';
+import type { ModalProps } from '../types';
 
 export const Modal: React.FC<ModalProps> = ({ 
   isOpen, 
@@ -43,9 +36,7 @@ export const Modal: React.FC<ModalProps> = ({
             onClick={onClose}
             className="text-gray-400 hover:text-uno-red dark:hover:text-uno-red-light transition-colors"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <CloseIcon />
           </button>
         </div>
         

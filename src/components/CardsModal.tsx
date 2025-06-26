@@ -1,16 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Modal } from './Modal';
-import type { UnoCard, CardSelection } from '../types';
+import type { UnoCard, CardSelection, CardsModalProps } from '../types';
 import { UNO_CARDS } from '../data/unoCards';
-
-interface CardsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (selections: CardSelection[], directPoints: number) => void;
-  onBack?: () => void;
-  initialSelections?: CardSelection[];
-  initialDirectPoints?: number;
-}
 
 const MAX_CARDS_PER_TYPE = 4;
 

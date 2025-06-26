@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
-import type { Player } from '../types';
-
-interface PlayerGridProps {
-  players: Player[];
-  targetPoints: number;
-  onUpdatePlayerName: (id: string, name: string) => void;
-  onRemovePlayer: (id: string) => void;
-  canRemovePlayer: boolean;
-  onEditCompleteRound: (roundIndex: number) => void;
-}
+import type { PlayerGridProps, PlayerNameCellProps } from '../types';
+import DeleteIcon from '../assets/DeleteIcon';
 
 export const PlayerGrid: React.FC<PlayerGridProps> = ({
   players,
@@ -129,15 +121,6 @@ export const PlayerGrid: React.FC<PlayerGridProps> = ({
   );
 };
 
-// Componente para el nombre del jugador con edición inline
-interface PlayerNameCellProps {
-  player: Player;
-  onUpdateName: (id: string, name: string) => void;
-  onRemove: (id: string) => void;
-  canRemove: boolean;
-  isWinner: boolean;
-}
-
 const PlayerNameCell: React.FC<PlayerNameCellProps> = ({ player, onUpdateName, onRemove, canRemove, isWinner }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(player.name);
@@ -190,11 +173,9 @@ const PlayerNameCell: React.FC<PlayerNameCellProps> = ({ player, onUpdateName, o
           className="text-gray-500 dark:text-gray-400 hover:text-uno-red dark:hover:text-uno-red-light transition-colors p-1 rounded"
           title="Eliminar jugador"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
+          <DeleteIcon />
         </button>
       )}
     </div>
   );
-}; 
+};

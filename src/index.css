@@ -207,11 +207,24 @@
     font-size: 4rem;
     letter-spacing: 2px;
     text-shadow:
-      3px 3px 0 #000,
-      -3px 3px 0 #000,
-      3px -3px 0 #000,
-      -3px -3px 0 #000,
-      0 0 2px #000;
+      /* Borde negro exterior */
+      4px 4px 0 #000,
+      -4px 4px 0 #000,
+      4px -4px 0 #000,
+      -4px -4px 0 #000,
+      0 4px 0 #000,
+      0 -4px 0 #000,
+      4px 0 0 #000,
+      -4px 0 0 #000,
+      /* Borde blanco interior */
+      2px 2px 0 #fff,
+      -2px 2px 0 #fff,
+      2px -2px 0 #fff,
+      -2px -2px 0 #fff,
+      0 2px 0 #fff,
+      0 -2px 0 #fff,
+      2px 0 0 #fff,
+      -2px 0 0 #fff;
     display: inline-block;
     transform: skew(-10deg, -5deg) rotate(-10deg);
     line-height: 1;

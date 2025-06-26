@@ -222,38 +222,38 @@ export const useGameState = () => {
 
   // Verificar si hay ganador
   const getWinner = useCallback(() => {
-    return gameState.players.find(player => player.points >= gameState.settings.targetPoints);
+    return gameState.players?.find(player => player.points >= gameState.settings.targetPoints);
   }, [gameState.players, gameState.settings.targetPoints]);
 
   // Obtener jugador por ID
   const getPlayerById = useCallback((playerId: string) => {
-    return gameState.players.find(p => p.id === playerId);
+    return gameState.players?.find(p => p.id === playerId);
   }, [gameState.players]);
 
   // Editar ronda específica
   const editRound = useCallback((roundIndex: number, updatedPoints: PlayerPoints[]) => {
     updateState(state => {
       // Verificar que la ronda existe
-      if (state.players.length === 0 || !state.players[0].rounds[roundIndex]) {
+      if ((state.players?.length ?? 0) === 0 || !state.players?.[0]?.rounds?.[roundIndex]) {
         return state;
       }
 
       // Crear la ronda actualizada
-      const originalRound = state.players[0].rounds[roundIndex];
+      const originalRound = state.players?.[0]?.rounds?.[roundIndex];
       const updatedRound: Round = {
         ...originalRound,
         points: updatedPoints
       };
 
       // Actualizar todas las rondas en todos los jugadores
-      const updatedPlayers = state.players.map(player => {
+      const updatedPlayers = state.players?.map(player => {
         const updatedRounds = [...player.rounds];
         updatedRounds[roundIndex] = updatedRound;
 
         // Recalcular puntos acumulados desde el principio
         let totalPoints = 0;
         updatedRounds.forEach(round => {
-          const playerPoints = round.points.find(p => p.playerId === player.id);
+          const playerPoints = round.points?.find(p => p.playerId === player.id);
           if (playerPoints) {
             totalPoints += playerPoints.points;
           }

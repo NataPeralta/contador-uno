@@ -1,49 +1,14 @@
-export interface Player {
-  id: string;
-  name: string;
-  points: number;
-  rounds: Round[];
-}
+export * from './player';
+export * from './round';
+export * from './unoCard';
+export * from './game';
+export * from './modal';
 
-export interface Round {
-  id: string;
-  winnerId: string;
-  points: PlayerPoints[];
-  timestamp: number;
-}
-
-export interface PlayerPoints {
-  playerId: string;
-  points: number;
-  cards: CardSelection[];
-  directPoints?: number;
-}
-
-export interface CardSelection {
-  card: UnoCard;
-  quantity: number;
-}
-
-export interface UnoCard {
-  id: string;
-  name: string;
-  value: number;
-  image?: string;
-}
-
-export interface GameSettings {
-  targetPoints: number;
-  theme: 'light' | 'dark' | 'system';
-  winnerSubtractsPoints?: boolean;
-  winnerSubtractType?: 'fixed' | 'percent';
-  winnerSubtractValue?: number;
-  newPlayerInitialScore?: 'zero' | 'min' | 'max';
-}
-
-export interface GameState {
-  players: Player[];
-  settings: GameSettings;
-  history: GameState[];
-}
-
-export type TargetPoints = 300 | 400 | 500 | 600 | 700; 
+export * from './components/Header.types';
+export * from './components/PlayerGrid.types';
+export * from './components/PlayerManager.types';
+export * from './components/SettingsModal.types';
+export * from './components/PlayerSelectionModal.types';
+export * from './components/CardsModal.types';
+export * from './components/GameControls.types';
+export * from './components/PlayerCard.types';

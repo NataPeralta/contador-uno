@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
-import type { PlayerPoints, CardSelection } from '../types';
+import type { PlayerPoints, CardSelection, UseGameLogicProps } from '../types';
 
-interface UseGameLogicProps {
-  gameState: any;
-  addRound: (winnerId: string, points: PlayerPoints[]) => void;
-  editRound: (roundIndex: number, points: PlayerPoints[]) => void;
-  getWinner: () => any;
-}
 
 export const useGameLogic = ({ gameState, addRound, editRound, getWinner }: UseGameLogicProps) => {
   const [showCardsModal, setShowCardsModal] = useState(false);

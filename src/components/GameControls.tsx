@@ -1,17 +1,5 @@
 import React from 'react';
-
-interface GameControlsProps {
-  targetPoints: number;
-  playerCount: number;
-  hasPendingPoints: boolean;
-  canUndo: boolean;
-  devMode: boolean;
-  onAddRound: () => void;
-  onUndoLastRound: () => void;
-  onNewGame: () => void;
-  onLoadExampleGame?: () => void;
-  onResetGame?: () => void;
-}
+import type { GameControlsProps } from '../types';
 
 export const GameControls: React.FC<GameControlsProps> = ({
   targetPoints,

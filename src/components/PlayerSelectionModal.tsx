@@ -1,18 +1,8 @@
 import React from 'react';
 import { Modal } from './Modal';
-import type { Player, PlayerPoints } from '../types';
+import type { PlayerSelectionModalProps } from '../types';
+import ArrowRightIcon from '../assets/ArrowRightIcon';
 
-interface PlayerSelectionModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  players: Player[];
-  onSelectPlayer: (playerId: string) => void;
-  pendingPoints?: PlayerPoints[];
-  onConfirmRound?: () => void;
-  hasPendingPoints?: boolean;
-  onEditPendingPoints?: (playerId: string) => void;
-  title?: string;
-}
 
 export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
   isOpen,
@@ -108,9 +98,7 @@ export const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
                     )}
                   </div>
                   <div className="text-uno-blue dark:text-uno-blue-light group-hover:text-white">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                    <ArrowRightIcon />
                   </div>
                 </div>
               </button>
