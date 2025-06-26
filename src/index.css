@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cabin+Condensed:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -188,5 +192,29 @@
 
   .bg-uno-gradient-subtle {
     @apply bg-gradient-to-br from-uno-blue from-10% via-uno-green via-30% to-uno-yellow to-90%;
+  }
+
+  .font-uno {
+    font-family: 'Cabin Condensed', 'Arial Bold', Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .uno-logo {
+    font-family: 'Cabin', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    color: #FFEE00;
+    font-size: 4rem;
+    letter-spacing: 2px;
+    text-shadow:
+      3px 3px 0 #000,
+      -3px 3px 0 #000,
+      3px -3px 0 #000,
+      -3px -3px 0 #000,
+      0 0 2px #000;
+    display: inline-block;
+    transform: skew(-10deg, -5deg) rotate(-10deg);
+    line-height: 1;
+    padding: 0.1em 0.3em;
   }
 }

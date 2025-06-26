@@ -12,8 +12,8 @@ export default {
         uno: {
           blue: '#0000FF',
           green: '#008000',
-          red: '#FF0000',
-          yellow: '#FFFF00',
+          red: '#EE161F',
+          yellow: '#F8DB22',
           black: '#000000',
           white: '#FFFFFF',
           // Variaciones para diferentes usos
@@ -23,7 +23,7 @@ export default {
           'green-dark': '#006000',
           'red-light': '#FF4040',
           'red-dark': '#CC0000',
-          'yellow-light': '#FFFF40',
+          'yellow-light': '#FFF176',
           'yellow-dark': '#CCCC00',
         },
         primary: {
